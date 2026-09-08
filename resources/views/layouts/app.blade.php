@@ -32,5 +32,8 @@
                 {{ $slot }}
             </main>
         </div>
+        <footer class="mt-5 py-3 text-center bg-light">
+            <p>&copy; {{ date('Y') }} Aplikasi Evolusi PL - All rights reserved</p>
+        </footer>
     </body>
 </html>

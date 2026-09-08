@@ -7,32 +7,39 @@ on:
     branches: [ main, dev ]
 
 jobs:
-  # Job 1: PHP Lint (Cek error sintaks PHP)
   php-lint:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3'
+
       - name: Run PHP Lint
         run: find . -name "*.php" -not -path "./vendor/*" -exec php -l {} \;
 
-  # Job 2: Laravel Tests (Jalankan unit test)
   laravel-tests:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3'
+
       - name: Install Dependencies
-        run: composer update --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
       - name: Copy .env
         run: cp .env.example .env
+
       - name: Generate App Key
         run: php artisan key:generate
+
       - name: Run Tests
         run: php artisan test

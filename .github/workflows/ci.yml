@@ -7,7 +7,7 @@ on:
     branches: [ main, dev ]
 
 jobs:
-  # Job 1: PHP Lint
+  # Job_1: PHP Lint
   php-lint:
     runs-on: ubuntu-latest
 
@@ -28,7 +28,7 @@ jobs:
       - name: Run PHP Lint
         run: find . -name "*.php" -not -path "./vendor/*" -exec php -l {} \;
 
-  # Job 2: Laravel Tests
+  # Job_2: Laravel Tests
   laravel-tests:
     runs-on: ubuntu-latest
 

@@ -1,62 +1,43 @@
-name: CI
+laravel-tests:
+  runs-on: ubuntu-latest
 
-on:
-  push:
-    branches: [ main, dev ]
-  pull_request:
-    branches: [ main, dev ]
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-jobs:
-  # Job_1: PHP Lint
-  php-lint:
-    runs-on: ubuntu-latest
+    - name: Setup PHP 8.4
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+        extensions: mbstring, dom, fileinfo, sqlite3, pdo_sqlite
+        coverage: none
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    - name: Check PHP Version
+      run: php -v
 
-      - name: Setup PHP 8.4
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-          extensions: mbstring, dom, fileinfo, sqlite3, pdo_sqlite
-          coverage: none
+    - name: Check Composer Version
+      run: composer -V
 
-      - name: Check PHP Version
-        run: php -v
+    - name: Install Composer Dependencies
+      run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-      - name: Run PHP Lint
-        run: find . -name "*.php" -not -path "./vendor/*" -exec php -l {} \;
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
 
-  # Job_2: Laravel Tests
-  laravel-tests:
-    runs-on: ubuntu-latest
+    - name: Install NPM Dependencies
+      run: npm ci
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    - name: Build Frontend Assets
+      run: npm run build
 
-      - name: Setup PHP 8.4
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-          extensions: mbstring, dom, fileinfo, sqlite3, pdo_sqlite
-          coverage: none
+    - name: Copy .env
+      run: cp .env.example .env
 
-      - name: Check PHP Version
-        run: php -v
+    - name: Generate App Key
+      run: php artisan key:generate
 
-      - name: Check Composer Version
-        run: composer -V
-
-      - name: Install Dependencies
-        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-
-      - name: Copy .env
-        run: cp .env.example .env
-
-      - name: Generate App Key
-        run: php artisan key:generate
-
-      - name: Run Tests
-        run: php artisan test
+    - name: Run Tests
+      run: php artisan test
